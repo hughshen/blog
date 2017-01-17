@@ -185,4 +185,26 @@ function shortcode_function ($atts, $content = '')
 }
 add_shortcode('shortcode', 'shortcode_function');
 
+// Load parent template for category page
+function load_parent_category_template($template) {
+    $cat_id = get_query_var('cat');
+    $category = get_category($cat_id);
+    $theme_dir = get_stylesheet_directory();
+
+    if (file_exists($theme_dir . '/category-' . $category->cat_ID . '.php')) {
+        $template = $theme_dir . '/category-' . $category->cat_ID . '.php';
+    } elseif (file_exists($theme_dir . '/category-' . $category->slug . '.php')) {
+        $template = $theme_dir . '/category-' . $category->slug . '.php';
+    } elseif (file_exists($theme_dir . '/category-' . $category->category_parent . '.php')) {
+        $template = $theme_dir . '/category-' . $category->category_parent . '.php';
+    } else {
+        $parent = get_category($category->category_parent);
+        if (file_exists($theme_dir . '/category-' . $parent->slug . '.php')) {
+            $template = $theme_dir . '/category-' . $parent->slug . '.php';
+        }
+    }
+
+    return $template;
+}
+add_action('category_template', 'load_parent_category_template');
 ```
