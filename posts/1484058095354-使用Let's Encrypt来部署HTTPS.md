@@ -99,37 +99,73 @@ echo "your_password" | sudo -S service nginx reload
 
 有个小问题，重载 nginx 配置需要 root 权限才能执行，所以上面的 reload 语句换了，不知道有没有更好的办法。
 
-最后附上完整的 nginx 配置
+~~最后附上完整的 nginx 配置~~
+
+**2017-02-17**
+
+开启 HTTP/2 与新增一些安全配置
 
 ```bash
 server {
     # SSL configuration
-    listen 443 ssl default_server;
-    listen [::]:443 ssl default_server;
+    # https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
 
     ssl on;
     ssl_certificate         /home/user/www/ssl/chained.pem;
     ssl_certificate_key     /home/user/www/ssl/domain.key;
 
+    # openssl dhparam -out dhparams.pem 2048
+    # https://weakdh.org/sysadmin.html
+    ssl_dhparam             /home/user/www/ssl/dhparams.pem;
+
+    # https://github.com/cloudflare/sslconfig/blob/master/conf
+    ssl_ciphers             EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+
+    ssl_prefer_server_ciphers       on;
+
+    ssl_protocols   TLSv1 TLSv1.1 TLSv1.2;
+
+    ssl_session_cache       shared:SSL:50m;
+    ssl_session_timeout     1d;
+
+    ssl_session_tickets     on;
+
+    # openssl rand 48 > session_ticket.key
+    ssl_session_ticket_key          /home/user/www/ssl/session_ticket.key;
+
+    # root.pem + intermediate.pem
+    ssl_trusted_certificate         /home/user/www/ssl/full_chained.pem;
+
     root /var/www/html;
 
+    # Add index.php to the list if you are using PHP
     index index.html;
 
     server_tokens off;
 
-    server_name yoursite.com www.yoursite.com;
+    server_name hughss.com www.hughss.com;
 
-    if ($host != 'yoursite.com') {
-        rewrite     ^/(.*)$ https://yoursite.com/$1 permanent;
+    if ($host != 'hughss.com') {
+        rewrite     ^/(.*)$ https://hughss.com/$1 permanent;
     }
 
     location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
         try_files $uri /index.html =404;
+
+        add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
+        add_header      X-Frame-Options deny;
+        add_header      X-Content-Type-Options nosniff;
+        add_header      Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'self' https://www.google-analytics.com https:; style-src 'unsafe-inline' https:; connect-src 'self' api.github.com; img-src https:; child-src https:; media-src 'none'; object-src: 'none';";
+        add_header      Cache-Control no-cache;
     }
 
-    # cache
+    # Cache
     location ~* ^.+\.(html|js)$ {
-        expires 1h;
+        expires 30d;
     }
 }
 
@@ -139,18 +175,18 @@ server {
 
     server_tokens off;
 
-    server_name yoursite.com www.yoursite.com;
+    server_name hughss.com www.hughss.com;
 
     access_log      /dev/null;
 
-    # ssl challenge
+    # SSL challenge
     location ^~ /.well-known/acme-challenge/ {
-        alias /home/shen/www/challenges/;
+        alias /home/user/www/challenges/;
         try_files $uri =404;
     }
 
     location / {
-        rewrite     ^/(.*)? https://yoursite.com/$1 permanent;
+        rewrite     ^/(.*)? https://hughss.com/$1 permanent;
     }
 }
 ```
@@ -160,3 +196,7 @@ server {
 ## 参考
 
 [Let's Encrypt，免费好用的 HTTPS 证书](https://imququ.com/post/letsencrypt-certificate.html)
+
+[本博客 Nginx 配置之完整篇](https://imququ.com/post/my-nginx-conf.html)
+
+[How To Set Up Nginx with HTTP/2 Support on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-with-http-2-support-on-ubuntu-16-04)
