@@ -4,6 +4,7 @@
 @text-color: #c9cacc;
 @primary-color: #2bbc8a;
 @mobile-width: 768px;
+@small-width: 480px;
 
 *, &:after, &:before {
     box-sizing: border-box;
@@ -57,9 +58,9 @@ a {
     width: 100%;
     max-width: 35rem;
     margin: 3rem 0;
-    flex: 1;
+    flex: auto;
     @media (max-width: @mobile-width) {
-        margin: 0;
+        margin: 0 0 1rem 0;
     }
 }
 
@@ -87,15 +88,19 @@ footer {
 }
 
 #list {
+    margin-bottom: 1rem;
     li {
         display: none;
-        margin-bottom: .5rem;
+        margin-bottom: 1rem;
         &.show {
             display: block;
         }
         time {
             color: #666;
             margin-right: 1rem;
+            @media (max-width: @small-width) {
+                display: block;
+            }
         }
     }
 }
@@ -103,7 +108,10 @@ footer {
 #page {
     .prev {
         display: none;
-        margin-right: 1rem;
+        float: left;
+    }
+    .next {
+        float: right;
     }
 }
 
