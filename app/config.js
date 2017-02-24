@@ -13,6 +13,7 @@ const config = {
     staticPostDir: 'post',
     showItems: showItems,
     sitemap: true,
+    siteUrl: 'https://hughss.com',
     metaComment: metaComment,
     styleComment: styleComment,
     contentComment: contentComment,

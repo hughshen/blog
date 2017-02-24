@@ -14,6 +14,7 @@ http.createServer((request, response) => {
     let contentType = 'text/html';
     let mimeTypes = {
         '.html': 'text/html',
+        '.xml': 'text/xml',
         '.js': 'text/javascript',
         '.css': 'text/css',
         '.json': 'application/json',

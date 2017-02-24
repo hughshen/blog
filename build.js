@@ -19,6 +19,9 @@ fs.mkdirSync(config.staticDir);
 console.log('Create static post directory ...');
 fs.mkdirSync(`${config.staticDir}/${config.staticPostDir}`);
 
+// Sitemap
+let sitemap = '';
+
 // Init document style
 let outputStyle = '';
 less.render(fs.readFileSync(config.styleFile, 'utf-8'), {
@@ -62,6 +65,13 @@ let items = posts.map((fileName, key) => {
 
     console.log(`${urlTitle} has been written ...`);
 
+    // Sitemap content
+    sitemap = `${sitemap}
+    <url>
+        <loc>${config.siteUrl}/${config.staticPostDir}/${urlTitle}.html</loc>
+        <lastmod>${shortDate}</lastmod>
+    </url>`;
+
     return `<li class="${showClass}"><time date="${date}">${shortDate}</time><a href="${config.staticPostDir}/${urlTitle}.html">${postTitle}</a></li>`;
 })
 
@@ -79,3 +89,10 @@ if (config.description.length) {
 
 console.log('Writing index.html ...');
 fs.writeFileSync(`${config.staticDir}/index.html`, minify(layout.replace(config.contentComment, `<ul id="list">${items.join('')}</ul><div id="page"><a href="javascript:;" class="prev" onclick="page.prev()">&lt;&nbsp;Prev</a><a href="javascript:;" class="next" onclick="page.next()">Next&nbsp;&gt;</a></div>`).replace(config.metaComment, metaTags), minifyOptions));
+
+if (config.sitemap) {
+    console.log('Writing sitemap.xml ...');
+    fs.writeFileSync(`${config.staticDir}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemap}
+</urlset>`);
+}
