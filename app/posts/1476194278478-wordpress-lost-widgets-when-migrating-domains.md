@@ -27,7 +27,7 @@ PS：有时间写个插件来处理下这个问题
 
 ---
 
-##参考
+## 参考
 
 [Lost Widgets When Migrating WordPress Domains (dev to production server)](http://theandystratton.com/2011/lost-widgets-when-migrating-domains-server)
 

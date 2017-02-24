@@ -57,6 +57,8 @@ if ($checkExtensionByMimeType) {
 
 ---
 
+## 参考
+
 [File uploading issue in Yii2](http://stackoverflow.com/questions/30161589/file-uploading-issue-in-yii2)
 
 [Yii Framework 2.0 Uploading Files Error finfo_file(): failed to open stream: No such file or directory](http://stackoverflow.com/questions/26998914/yii-framework-2-0-uploading-files-error-finfo-file-failed-to-open-stream-no)
