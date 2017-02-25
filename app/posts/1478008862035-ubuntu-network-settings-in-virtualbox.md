@@ -83,6 +83,14 @@ sudo service networking restart
 
 PS: 有时间再去研究下 Linux 的网络配置
 
+**2017-02-25**
+
+可以添加开机启动项，在 `/etc/rc.local` 中添加
+
+```shell
+service networking restart
+```
+
 ---
 
 ## 参考
