@@ -38,7 +38,7 @@ ${styleComment}
     ${contentComment}
 </div>
 <footer>
-    <div class="left">Copyright &copy; 2017 Hugh Shen</div>
+    <div class="left">Copyright &copy; 2017 Hugh Shen, theme inspired by <a class="themeby" href="https://github.com/probberechts/cactus-dark" target="_blank">Cactus Dark</a></div>
     <div class="right">
         <ul>
             <li><a href="/">Home</a></li>

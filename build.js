@@ -61,7 +61,7 @@ let items = posts.map((fileName, key) => {
     }
 
     // Start to write post html file
-    fs.writeFileSync(`${config.staticDir}/${config.staticPostDir}/${urlTitle}.html`, minify(layout.replace(config.contentComment, `<article><div class="head"><h1>${postTitle}</h1><span class="ps">${date.toDateString().slice(4)}</span></div><div class="body">${marked(mdText)}</div></article>`).replace(config.metaComment, metaTags), minifyOptions));
+    fs.writeFileSync(`${config.staticDir}/${config.staticPostDir}/${urlTitle}.html`, minify(layout.replace(config.contentComment, `<article><div class="head"><h1>${postTitle}</h1><time datetime="${date.toISOString()}" itemprop="datePublished">${date.toDateString().slice(4)}</time></div><div class="body">${marked(mdText)}</div></article>`).replace(config.metaComment, metaTags), minifyOptions));
 
     console.log(`${urlTitle} has been written ...`);
 
@@ -72,7 +72,7 @@ let items = posts.map((fileName, key) => {
         <lastmod>${shortDate}</lastmod>
     </url>`;
 
-    return `<li class="${showClass}"><time date="${date}">${shortDate}</time><a href="${config.staticPostDir}/${urlTitle}.html">${postTitle}</a></li>`;
+    return `<li class="${showClass}"><time datetime="${date.toISOString()}" itemprop="datePublished">${shortDate}</time><a href="${config.staticPostDir}/${urlTitle}.html">${postTitle}</a></li>`;
 })
 
 // Writing index.html
