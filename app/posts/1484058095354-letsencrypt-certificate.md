@@ -156,8 +156,22 @@ server {
 
     server_name hughss.com www.hughss.com;
 
+    if ($request_method !~ ^(GET|POST)$) {
+        return  444;
+    }
+
     if ($host != 'hughss.com') {
         rewrite     ^/(.*)$ https://hughss.com/$1 permanent;
+    }
+
+    location ~* (robots\.txt|favicon\.ico)$ {
+        root    /home/user/www/static;
+        expires 30d;
+    }
+
+    # Cache
+    location ~* \.(css|js)$ {
+        expires 30d;
     }
 
     location / {
@@ -170,11 +184,6 @@ server {
         add_header      X-Content-Type-Options nosniff;
         add_header      Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'self' https://www.google-analytics.com https:; style-src 'unsafe-inline' https:; connect-src 'self' api.github.com; img-src https:; child-src https:; media-src 'none'; object-src: 'none';";
         add_header      Cache-Control no-cache;
-    }
-
-    # Cache
-    location ~* ^.+\.(html|js)$ {
-        expires 30d;
     }
 }
 
