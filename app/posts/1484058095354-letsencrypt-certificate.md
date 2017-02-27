@@ -85,11 +85,17 @@ Let's Encrypt 签发的证书只有 90 天有效期，创建 `renew_cert.sh` 并
 ```bash
 #!/bin/bash
 
-cd /home/user/www/ssl/
+CurrentPath=`pwd`
+SSLPath='/home/user/www/ssl/'
+
+cd $SSLPath
 python acme_tiny.py --account-key account.key --csr domain.csr --acme-dir /home/user/www/challenges/ > signed.crt || exit
 wget -O - https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem > intermediate.pem
 cat signed.crt intermediate.pem > chained.pem
-echo "your_password" | sudo -S service nginx reload
+echo "password" | sudo -S service nginx reload
+
+cd $CurrentPath
+exit 0
 ```
 
 添加定时任务，使用 `crontab -e` 命令，选择好编辑器之后，清除文件内容后加上以下语句，`Ctrl + x` 然后回车就行。
