@@ -27,7 +27,7 @@ sudo vim common-session-noninteractive
 session required pam_unix.so
 ```
 
-然后在上面添加一行
+然后在这一行的上面添加
 
 ```
 session [success=1 default=ignore] pam_succeed_if.so service in cron quiet use_uid
