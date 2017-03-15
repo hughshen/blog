@@ -80,13 +80,24 @@ var page = {
             }
         }
     }
+};
+// https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+function uuid() {
+    if (!/cid=.*/.test(document.cookie)) {
+        var d = new Date().getTime();
+        var cid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        var d = new Date();
+        d.setFullYear(d.getFullYear() + 2);
+        document.cookie = 'cid=' + cid + ';expires=' + d.toGMTString() + ';path=/;secure';
+    }
+    var res = document.cookie.match(/cid=.*;?/);
+    return res ? res[0].replace(';', '') : '';
 }
-;(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-62100459-1', 'auto');
-ga('send', 'pageview');
+;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height,"dl="+e(a.location.href),uuid()],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
 </script>
 </body>
 </html>
