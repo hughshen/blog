@@ -49,7 +49,7 @@ let items = posts.map((fileName, key) => {
     let tempMatch = mdText.match(/<!--\s*title:(.*)\s*-->/i);
     if (tempMatch && typeof tempMatch[1] !== 'undefined') {
         postTitle = tempMatch[1];
-        metaTags = metaTags + buildTag('title', tempMatch[1]);
+        metaTags = metaTags + buildTag('title', `${tempMatch[1]} | ${config.title}`);
     }
     tempMatch = mdText.match(/<!--\s*keywords:(.*)\s*-->/i);
     if (tempMatch && typeof tempMatch[1] !== 'undefined') {
