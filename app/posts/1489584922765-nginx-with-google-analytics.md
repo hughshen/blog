@@ -3,14 +3,14 @@
 
 网站添加 Google Analytics 一般是在页面中添加 Tracking Code，而加载进来的 analytics.js 脚本有 11 KB 的大小，如今我每个页面的大小大概是 5 KB 左右，相对来说有点大了，另外还有一些问题，比如在大陆要加载分析脚本很慢，而且容易给一些插件给屏蔽掉等，无意中找到一篇文章说可以利用 Nginx 来做转发，详情看 [Nginx 内配置 Google Analytics 指南](https://darknode.in/network/nginx-google-analytics/)。
 
-另外我又找了一些文章 ([本博客零散优化点汇总](https://imququ.com/post/summary-of-my-blog-optimization.html))，作者也是利用服务端来转发 Google 统计的 (这个博客真的好快)。
+另外我又找了一些文章 ([本博客零散优化点汇总](https://imququ.com/post/summary-of-my-blog-optimization.html))，作者也是利用服务端来进行转发的 (这个博客真的好快)。
 
 大概总结一下，实现方式可以分为两种
 
-1. 由 Nginx 进行转发，使用 ngx_http_userid_module 生成用户唯一 ID，对每次请求转发
-2. Nginx + JavaScript 进行转发，首先由 JavaScript 在浏览器生成 ID，然后在浏览器每次访问中添加统计请求 (可以自定义统计数据)，再由 Nginx 转发
+1. 服务端对每次请求进行转发
+2. 服务端与客户端结合进行转发，首先在浏览器对每次访问添加统计请求 (可以自定义统计数据)，再由服务端进行转发
 
-这两种方式虽然都是由 Nginx 作转发，但还是有一点点不同，第一种获取不了浏览器的一些信息，比如屏幕尺寸，文档标题等等，而第二种则依赖于 JavaScript，如果浏览器禁用了 JavaScript 的话，则不会发送统计请求了，本文使用的是第二种，关于第一种可以参考这篇文章：[使用Nginx将请求转发至Google Analytics实现后端统计](https://eason-yang.com/2016/11/04/google-analytics-via-nginx/)，里面写得很详细。
+这两种方式虽然都是由 Nginx 作转发，但还是有一点点不同，第一种获取不了浏览器的一些信息，比如屏幕尺寸，文档标题等等，而第二种则依赖于 JavaScript，如果浏览器禁用了 JavaScript 的话，就不会发送统计请求了，本文使用的是第二种，关于第一种可以参考这篇文章：[使用Nginx将请求转发至Google Analytics实现后端统计](https://eason-yang.com/2016/11/04/google-analytics-via-nginx/)，里面写得很详细。
 
 ### 客户端
 
