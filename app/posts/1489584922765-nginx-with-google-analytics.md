@@ -14,27 +14,10 @@
 
 ### 客户端
 
-用户 ID 也可以由 Nginx 生成，使用 [ngx_http_userid_module](https://nginx.org/en/docs/http/ngx_http_userid_module.html)
-
-请求地址是 `/ga.html?dt=...`
+请求地址是 ga.html，代码段摘自 [JerryQu 的小站](https://imququ.com)
 
 ```javascript
-function uuid() {
-    if (!/cid=.*/.test(document.cookie)) {
-        var d = new Date().getTime();
-        var cid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        var d = new Date();
-        d.setFullYear(d.getFullYear() + 2);
-        document.cookie = 'cid=' + cid + ';expires=' + d.toGMTString() + ';path=/;secure';
-    }
-    var res = document.cookie.match(/cid=.*;?/);
-    return res ? res[0].replace(';', '') : '';
-}
-;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height,"dl="+e(a.location.href),uuid()],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
+;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height,"dl="+e(a.location.href)],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
 ```
 
 ### 服务端
@@ -42,7 +25,8 @@ function uuid() {
 有几点需要注意
 
 * map 指令要写在 server 外，即 http 块中 (nginx.conf)
-* /ga.html 要禁止缓存，这样在点击后退的时候就能实时统计了
+* 使用 [ngx_http_userid_module](https://nginx.org/en/docs/http/ngx_http_userid_module.html) 生成唯一用户 ID
+* ga.html 要禁止缓存，这样在点击后退的时候就能实时统计了
 * 有时候转发地址会使用 ipv6，可以在 resolver 中关掉
 
 ```
@@ -58,11 +42,17 @@ map $http_user_agent $limit_bots {
     ~*(qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo!.*Slurp|Yahoo!.*Slurp.*China|YoudaoBot|Sosospider|Sogou.*spider|Sogou.*web.*spider|MSNBot|ia_archiver|Tomato.*Bot|YiSou.*Spider) 1;
 }
 
+userid on;
+userid_name cid;
+userid_domain hughss.com;
+userid_path /;
+userid_expires max;
+
 location @tracker {
     internal;
     resolver 8.8.8.8 8.8.4.4 ipv6=off;
     proxy_method GET;
-    proxy_pass https://www.google-analytics.com/collect?v=1&tid=UA-xxxxxxxx-1&t=pageview&je=0&uip=$remote_addr&$args&z=$msec;
+    proxy_pass https://www.google-analytics.com/collect?v=1&tid=UA-xxxxxxxx-1&$uid_set$uid_got&t=pageview&je=0&uip=$remote_addr&$args&z=$msec;
     proxy_set_header User-Agent $http_user_agent;
     proxy_pass_request_headers off;
     proxy_pass_request_body off;
@@ -86,8 +76,6 @@ location ~ /ga.html {
     return 444;
 }
 ```
-
-
 
 ---
 
