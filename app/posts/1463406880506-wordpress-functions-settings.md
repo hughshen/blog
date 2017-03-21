@@ -136,9 +136,9 @@ function register_logo_post_type_function()
 add_action('init', 'register_logo_post_type_function');
 
 // Custom pagination
-function pagination($category_slug, $show_items = 10, $range = 2)
+function my_pagination($category_slug, $show_items = 10, $range = 2)
 {
-	global $paged;
+	$paged = get_query_var('paged', 1);
 
 	$query = new WP_Query(array(
 		'category_name' => $category_slug,
@@ -156,23 +156,44 @@ function pagination($category_slug, $show_items = 10, $range = 2)
 
 	if ($pages < 2) return;
 
-	echo '<ul class="pagination">';
+	$html = '<ul class="pagination">';
 
-	// echo ($paged > 2 && $pages > $paged) ? '<a href="' . get_pagenum_link(1) . '">&lt;&lt;</a>' : '';
-	echo ($paged > 1) ? '<li><a href="' . get_pagenum_link($prev) . '" aria-label="Previous"><span aria-hiddentrue>&lt;</span></a></li>' : '';
+	// $html .= ($paged > 2 && $pages > $paged) ? '<a href="' . get_pagenum_link(1) . '">&lt;&lt;</a>' : '';
+	$html .= ($paged > 1) ? '<li><a href="' . get_pagenum_link($prev) . '" aria-label="Previous"><span aria-hiddentrue>&lt;</span></a></li>' : '';
 
+	$left_range = ($paged - $range > 1) ? $paged - $range : 2;
+	$right_range = ($paged + $range >= $pages) ? $pages - 1 : $paged + $range;
+	$range_arr = range($left_range, $right_range);
+	array_unshift($range_arr, 1);
+	array_push($range_arr, $pages);
+
+	$left_dots = false;
+	$right_dots = false;
 	for ($i = 1; $i <= $pages; $i++) {
-		if ($paged == $i) {
-			echo '<li class="active"><a href="javascript:;">' . $i . '</a></li>';
+		if (in_array($i, $range_arr)) {
+			if ($paged == $i) {
+				$html .= '<li class="active"><a href="javascript:;">' . $i . '</a></li>';
+			} else {
+				$html .= '<li><a href="' . get_pagenum_link($i) . '">' . $i . '</a></li>';
+			}
 		} else {
-			echo '<li><a href="' . get_pagenum_link($i) . '">' . $i . '</a></li>';
+			if (($paged < $i && !$left_dots) || ($paged > $i && !$right_dots)) {
+				$html .= '<li><span>...</span></li>';
+				if ($paged < $i) {
+					$left_dots = true;
+				} else {
+					$right_dots = true;
+				}
+			}
 		}
 	}
 
-	echo ($paged < $pages) ? '<li><a href="' . get_pagenum_link($next) . '" aria-label="Next"><span aria-hidden="true">&gt;</span></a></li>' : '';
-	// echo ($paged < $pages) ? '<a href="' . get_pagenum_link($pages) . '">&gt;&gt;</a>' : '';
+	$html .= ($paged < $pages) ? '<li><a href="' . get_pagenum_link($next) . '" aria-label="Next"><span aria-hidden="true">&gt;</span></a></li>' : '';
+	// $html .= ($paged < $pages) ? '<a href="' . get_pagenum_link($pages) . '">&gt;&gt;</a>' : '';
 
-	echo '</ul>';
+	$html .= '</ul>';
+
+	return $html;
 }
 
 // Shortcode Start
