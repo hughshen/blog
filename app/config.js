@@ -6,7 +6,7 @@ const contentComment = '<!-- content -->';
 const config = {
     title: 'Hugh\'s Blog',
     keywords: 'Blog, Hugh Shen, hughshen, Linux, PHP, JavaScript, HTML, JS, CSS, Yii, WordPress',
-    description: 'But he\'s never bought a lottery ticket',
+    description: 'But he has never bought a lottery ticket.',
     postsDir: './app/posts',
     styleFile: './app/style.less',
     staticDir: './static',
