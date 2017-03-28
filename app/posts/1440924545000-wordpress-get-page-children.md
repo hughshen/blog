@@ -6,14 +6,21 @@
 代码
 
 ```php
-<?php
-// 首先获取到需要的 pages，可以自定义 args
-$query = new WP_Query();
-$pages = $query->query(array('post_type' => 'page', 'posts_per_page' => -1,));
+// get_page_children 方法
+// 首先获取到需要的 pages
+// $query = new WP_Query();
+// $pages = $query->query(array('post_type' => 'page', 'posts_per_page' => -1,));
+$pages = get_posts('post_type=page&posts_per_page=-1&orderby=date&order=DESC');
+$page_children = get_page_children(get_the_ID(), $pages);
 
-// 需要把前面获取到的 $pages 作为参数传递到 get_page_children 方法中
-$page_children = get_page_children($page->ID, $pages);
-?>
+// get_children 方法
+$page_children = get_children(array(
+	'post_parent' => get_the_ID(),
+	'post_type' => 'page',
+	'numberposts' => -1,
+	'post_status' => 'publish'
+));
+$page_children = array_values($page_children);
 ```
 
 ---

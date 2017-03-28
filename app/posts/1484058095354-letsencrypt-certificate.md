@@ -143,8 +143,11 @@ server {
 
     # openssl rand 48 > session_ticket.key
     ssl_session_ticket_key          /home/user/www/ssl/session_ticket.key;
+    
+    ssl_stapling            on;
+    ssl_stapling_verify     on;
 
-    # root.pem + intermediate.pem
+    # intermediate.pem + root.pem
     ssl_trusted_certificate         /home/user/www/ssl/full_chained.pem;
 
     root /var/www/html;
