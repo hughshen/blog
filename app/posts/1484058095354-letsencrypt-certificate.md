@@ -185,7 +185,7 @@ server {
         add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
         add_header      X-Frame-Options deny;
         add_header      X-Content-Type-Options nosniff;
-        add_header      Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'self' https://www.google-analytics.com https:; style-src 'unsafe-inline' https:; connect-src 'self' api.github.com; img-src https:; child-src https:; media-src 'none'; object-src: 'none';";
+        add_header      Content-Security-Policy "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'self' https://www.google-analytics.com https:; style-src 'unsafe-inline' https:; connect-src 'self' api.github.com; img-src https:; child-src https:; media-src 'none'; object-src 'none';";
         add_header      Cache-Control no-cache;
     }
 }
