@@ -17,7 +17,7 @@
 请求地址是 ga.html，代码段摘自 [JerryQu 的小站](https://imququ.com)
 
 ```javascript
-;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height,"dl="+e(a.location.href)],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
+;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
 ```
 
 ### 服务端
@@ -26,7 +26,7 @@
 
 * map 指令要写在 server 外，即 http 块中 (nginx.conf)
 * 使用 [ngx_http_userid_module](https://nginx.org/en/docs/http/ngx_http_userid_module.html) 生成唯一用户 ID
-* ga.html 要禁止缓存，这样在点击后退的时候就能实时统计了
+* ga.html 要禁止缓存，这样在点击后退的时候就能实时统计了 (也可以在后面追加一个时间戳参数来刷新，例如 &_=new Date)
 * 有时候转发地址会使用 ipv6，可以在 resolver 中关掉
 
 ```
@@ -52,7 +52,7 @@ location @tracker {
     internal;
     resolver 8.8.8.8 8.8.4.4 ipv6=off;
     proxy_method GET;
-    proxy_pass https://www.google-analytics.com/collect?v=1&tid=UA-xxxxxxxx-1&$uid_set$uid_got&t=pageview&je=0&uip=$remote_addr&$args&z=$msec;
+    proxy_pass https://www.google-analytics.com/collect?v=1&tid=UA-xxxxxxxx-1&$uid_set$uid_got&t=pageview&je=0&uip=$remote_addr&dl=$http_referer&$args&z=$msec;
     proxy_set_header User-Agent $http_user_agent;
     proxy_pass_request_headers off;
     proxy_pass_request_body off;
