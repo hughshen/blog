@@ -81,7 +81,7 @@ var page = {
         }
     }
 }
-;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height,"dl="+e(a.location.href)],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
+;!function(a,b,c){var d=a.screen,e=encodeURIComponent,f=["dt="+e(b.title),"dr="+e(b.referrer),"ul="+(c.language||c.browserLanguage),"sd="+d.colorDepth+"-bit","sr="+d.width+"x"+d.height],g="?"+f.join("&");a.__ga_img=new Image,a.__ga_img.src="/ga.html"+g}(window,document,navigator,location);
 </script>
 </body>
 </html>
