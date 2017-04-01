@@ -88,7 +88,7 @@ if (config.description.length) {
 }
 
 console.log('Writing index.html ...');
-fs.writeFileSync(`${config.staticDir}/index.html`, minify(layout.replace(config.contentComment, `<ul id="list">${items.join('')}</ul><div id="page"><a href="javascript:;" class="prev" onclick="page.prev()">&lt;&nbsp;Prev</a><a href="javascript:;" class="next" onclick="page.next()">Next&nbsp;&gt;</a></div>`).replace(config.metaComment, metaTags), minifyOptions));
+fs.writeFileSync(`${config.staticDir}/index.html`, minify(layout.replace(config.contentComment, `<ul id="list">${items.join('')}</ul>`).replace(config.metaComment, metaTags), minifyOptions));
 
 if (config.sitemap) {
     console.log('Writing sitemap.xml ...');
