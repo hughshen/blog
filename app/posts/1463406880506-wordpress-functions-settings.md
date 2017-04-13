@@ -13,6 +13,9 @@
 // Actions added in /wp-includes/default-filters.php
 // remove_action('wp_head', '_wp_render_title_tag', 1);
 // remove_action('wp_head', 'wp_enqueue_scripts', 1);
+// remove_action('wp_head', 'wp_print_styles', 8);
+// remove_action('wp_head', 'wp_print_head_scripts', 9);
+// remove_action('wp_footer', 'wp_print_footer_scripts');
 remove_action('wp_head', 'feed_links', 2);
 remove_action('wp_head', 'feed_links_extra', 3);
 remove_action('wp_head', 'rsd_link');
@@ -23,15 +26,12 @@ remove_action('wp_head', 'start_post_rel_link', 10, 0);
 remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
 remove_action('wp_head', 'locale_stylesheet');
 remove_action('wp_head', 'noindex', 1);
-remove_action('wp_head', 'wp_print_styles', 8);
-remove_action('wp_head', 'wp_print_head_scripts', 9);
 remove_action('wp_head', 'wp_generator');
 remove_action('wp_head', 'rel_canonical');
 remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_head', 'wp_oembed_add_discovery_links');
 remove_action('wp_head', 'wp_oembed_add_host_js');
-remove_action('wp_footer', 'wp_print_footer_scripts');
 
 // Add custom scripts
 function add_custom_scripts_function()
