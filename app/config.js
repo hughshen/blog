@@ -43,7 +43,7 @@ ${styleComment}
     <div class="right">
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/tool">Tools</a></li>
+            <li><a href="/tool/">Tools</a></li>
             <li><a href="https://github.com/hughshen" target="_blank">GitHub</a></li>
         </ul>
     </div>
