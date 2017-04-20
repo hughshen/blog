@@ -35,18 +35,16 @@ ${styleComment}
 <body>
 <div id="content">
     <!--<header></header>-->
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/tool/">Tools</a></li>
+        <li><a href="https://github.com/hughshen" target="_blank">GitHub</a></li>
+    </ul>
     ${contentComment}
     <ul id="page"></ul>
 </div>
 <footer>
-    <div class="left">Copyright &copy; 2017 Hugh Shen, theme inspired by <a href="https://github.com/probberechts/cactus-dark" target="_blank">Cactus Dark</a></div>
-    <div class="right">
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/tool/">Tools</a></li>
-            <li><a href="https://github.com/hughshen" target="_blank">GitHub</a></li>
-        </ul>
-    </div>
+    Copyright &copy; 2017 Hugh Shen, theme inspired by <a href="https://2b.dog/" target="_blank">Dawn's Blog</a>
 </footer>
 <script>
 var items = document.querySelectorAll('#list li'),
