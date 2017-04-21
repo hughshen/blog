@@ -47,10 +47,6 @@ body {
     background: -moz-linear-gradient(45deg, @left-color 15%, @right-color 85%);
     background: -webkit-linear-gradient(45deg, @left-color 15%, @right-color 85%);
     background: linear-gradient(45deg, @left-color 15%, @right-color 85%);
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: 50%;
-    background-size: 100%;
 }
 
 a {
@@ -156,6 +152,9 @@ footer {
     color: @white;
     a {
         color: @white;
+        &:hover {
+            color: @right-color;
+        }
     }
 }
 
