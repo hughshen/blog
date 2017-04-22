@@ -1,14 +1,14 @@
 {
-  "name": "bb",
+  "name": "blog",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "build.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Hugh Shen",
+  "license": "MIT",
   "devDependencies": {
     "highlightjs": "^9.8.0",
     "html-minifier": "^3.3.3",
