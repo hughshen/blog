@@ -1,98 +1,94 @@
 const fs = require('fs');
+const path = require('path');
 const marked = require('marked');
 const minify = require('html-minifier').minify;
 const less = require('less');
+
 const minifyOptions = require('./helper').minifyOptions;
 const markedOptions = require('./helper').markedOptions;
 const deleteFolderRecursive = require('./helper').deleteFolderRecursive;
 const buildTag = require('./helper').buildTag;
 const config = require('./app/config');
-const posts = fs.readdirSync(config.postsDir, 'utf-8').reverse();
+
+const posts = fs.readdirSync(config.folder.mdPath, 'utf-8').reverse();
 
 // Set marked options
 marked.setOptions(markedOptions);
 
 // Delete static directory if exists
-deleteFolderRecursive(config.staticDir);
+deleteFolderRecursive(`./${config.folder.static}`);
 console.log('Create static directory ...');
-fs.mkdirSync(config.staticDir);
-console.log('Create static post directory ...');
-fs.mkdirSync(`${config.staticDir}/${config.staticPostDir}`);
+fs.mkdirSync(`./${config.folder.static}`);
+console.log('Create post directory ...');
+fs.mkdirSync(`./${config.folder.static}/${config.folder.staticPost}`);
 
 // Sitemap
 let sitemap = '';
-
-// Init document style
-let outputStyle = '';
-less.render(fs.readFileSync(config.styleFile, 'utf-8'), {
-    compress: true,
-}, (err, output) => {
-    if (err) throw err;
-    outputStyle = output.css;
-});
-// Replace style for layout
-let layout = config.layout.replace(config.styleComment, `<style>${outputStyle}</style>`);
-
-let items = posts.map((fileName, key) => {
+// Home posts list
+let itemsList = '';
+// Posts data array
+let itemsData = posts.map((fileName, key) => {
     let timestamp = fileName.match(/[\d]{13}/i)[0];
     let date = new Date(parseFloat(timestamp));
     let urlTitle = fileName.slice(0, -3).replace(/[\d]{13}-/i, '');
-    let postTitle = urlTitle;
     let shortDate = date.toISOString().slice(0, 10);
     let longDate = date.toISOString().slice(0, 10) + ' ' + date.toTimeString().slice(0, 8);
-    let blockClass = 'block ' + (key % 2 == 0 ? 'left' : 'right');
-    let mdText = fs.readFileSync(`${config.postsDir}/${fileName}`, 'utf-8');
-    let showClass = key < config.showItems ? 'show' : '';
+    let mdText = fs.readFileSync(path.resolve(__dirname, `${config.folder.mdPath}/${fileName}`), 'utf-8');
+    let showClass = key < config.homeConfig.showItems ? config.homeConfig.showClass : '';
 
-    // Meta tag
-    let metaTags = '';
-    let tempMatch = mdText.match(/<!--\s*title:(.*)\s*-->/i);
-    if (tempMatch && typeof tempMatch[1] !== 'undefined') {
-        postTitle = tempMatch[1];
-        metaTags = metaTags + buildTag('title', `${tempMatch[1]} | ${config.title}`);
-    }
-    tempMatch = mdText.match(/<!--\s*keywords:(.*)\s*-->/i);
-    if (tempMatch && typeof tempMatch[1] !== 'undefined') {
-        metaTags = metaTags + buildTag('meta', 'name', 'keywords', 'content', tempMatch[1]);
-    }
-    tempMatch = mdText.match(/<!--\s*description:(.*)\s*-->/i);
-    if (tempMatch && typeof tempMatch[1] !== 'undefined') {
-        metaTags = metaTags + buildTag('meta', 'name', 'description', 'content', tempMatch[1]);
-    }
-
-    // Start to write post html file
-    fs.writeFileSync(`${config.staticDir}/${config.staticPostDir}/${urlTitle}.html`, minify(layout.replace(config.contentComment, `<article><div class="head"><h1>${postTitle}</h1><time datetime="${date.toISOString()}" itemprop="datePublished">${date.toDateString().slice(4)}</time></div><div class="body">${marked(mdText)}</div></article>`).replace(config.metaComment, metaTags), minifyOptions));
-
-    console.log(`${urlTitle} has been written ...`);
-
-    // Sitemap content
     sitemap = `${sitemap}
     <url>
-        <loc>${config.siteUrl}/${config.staticPostDir}/${urlTitle}.html</loc>
+        <loc>${config.siteUrl}/${config.folder.staticPost}/${urlTitle}.html</loc>
         <lastmod>${shortDate}</lastmod>
     </url>`;
 
-    return `<li class="${showClass}"><time datetime="${date.toISOString()}" itemprop="datePublished">${shortDate}</time><a href="${config.staticPostDir}/${urlTitle}.html">${postTitle}</a></li>`;
-})
+    itemsList += `<li class="${showClass}"><time datetime="${date.toISOString()}" itemprop="datePublished">${shortDate}</time><a href="${config.folder.staticPost}/${urlTitle}.html">${config.postConfig.getTitle(mdText)}</a></li>`;
 
-// Writing index.html
-let metaTags = '';
-if (config.title.length) {
-    metaTags = metaTags + buildTag('title', config.title);
-}
-if (config.keywords.length) {
-    metaTags = metaTags + buildTag('meta', 'name', 'keywords', 'content', config.keywords);
-}
-if (config.description.length) {
-    metaTags = metaTags + buildTag('meta', 'name', 'description', 'content', config.description);
-}
+    return {
+        date: date,
+        urlTitle: urlTitle,
+        mdText: mdText,
+    };
+});
 
-console.log('Writing index.html ...');
-fs.writeFileSync(`${config.staticDir}/index.html`, minify(layout.replace(config.contentComment, `<ul id="list">${items.join('')}</ul>`).replace(config.metaComment, metaTags), minifyOptions));
-
-if (config.sitemap) {
-    console.log('Writing sitemap.xml ...');
-    fs.writeFileSync(`${config.staticDir}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>
+less.render(fs.readFileSync(config.homeConfig.style, 'utf-8'), {
+    paths: [config.folder.assetsLess],
+    compress: true,
+}, (err, output) => {
+    if (err) throw err;
+    // Write index.html
+    console.log('Writing index.html ...');
+    config.renderClear();
+    config.setBeforeHead(config.homeConfig.getHead());
+    config.setBeforeHead(buildTag('style', output.css));
+    config.setBeforeBody(config.homeConfig.getBody());
+    config.setRenderContent(`<ul id="list">${itemsList}</ul>`);
+    config.setRenderContent(config.homeConfig.getContent());
+    fs.writeFileSync(path.resolve(__dirname, `${config.folder.static}/index.html`), minify(config.render(), minifyOptions));
+    // Write sitemap.xml
+    if (config.sitemap) {
+        console.log('Writing sitemap.xml ...');
+        fs.writeFileSync(path.resolve(__dirname, `${config.folder.static}/sitemap.xml`), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemap}
 </urlset>`);
-}
+    }
+});
+
+less.render(fs.readFileSync(config.postConfig.style, 'utf-8'), {
+    paths: [config.folder.assetsLess],
+    compress: true,
+}, (err, output) => {
+    if (err) throw err;
+    // Start to generate post static file
+    itemsData.map(post => {
+        config.renderClear();
+        config.setBeforeHead(`${config.postConfig.getMetaTags(post.mdText)}`);
+        config.setBeforeHead(config.postConfig.getHead());
+        config.setBeforeHead(buildTag('style', output.css));
+        config.setBeforeBody(config.postConfig.getBody());
+        config.setRenderContent(`<article><div class="head"><h1>${config.postConfig.getTitle(post.mdText)}</h1><time datetime="${post.date.toISOString()}" itemprop="datePublished">${post.date.toDateString().slice(4)}</time></div><div class="body">${marked(post.mdText)}</div></article>`);
+        config.setRenderContent(config.postConfig.getContent());
+        fs.writeFileSync(path.resolve(__dirname, `${config.folder.static}/${config.folder.staticPost}/${post.urlTitle}.html`), minify(config.render(), minifyOptions));
+        console.log(`${post.urlTitle}.html has been written ...`);
+    });
+});
