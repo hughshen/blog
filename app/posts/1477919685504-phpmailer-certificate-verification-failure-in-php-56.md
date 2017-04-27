@@ -29,6 +29,25 @@ OpenSSL Error messages: error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:
 
 需要注意的是，上面的解决办法也是临时的，并不建议。
 
+**2017-04-27**
+
+最近服务器 PHP 的版本升级到 5.6 了，个别网站的邮件功能受到了影响，那些把 PHPMailer 作为第三方引入的网站还好处理，但是有相当一部分网站使用的是 WordPress，其中 SMTP 设置使用的是这个插件：[WP Mail SMTP](https://wordpress.org/plugins/wp-mail-smtp/)，该插件很好用，代码也很简洁。本来还以为要移除插件来重新修改邮件功能，所幸插件作者提供了 PHPMailer 的额外参数设置钩子：`wp_mail_smtp_custom_options`，在 functions.php 中加入下面代码就行。
+
+```php
+add_filter('wp_mail_smtp_custom_options', 'my_wp_mail_smtp_custom_options');
+function my_wp_mail_smtp_custom_options($phpmailer)
+{
+    $phpmailer->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+    return $phpmailer;
+}
+```
+
 ---
 
 ## 参考
@@ -36,3 +55,7 @@ OpenSSL Error messages: error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:
 [PHPMailer: SMTP Error: Could not connect to SMTP host](https://stackoverflow.com/questions/3477766/phpmailer-smtp-error-could-not-connect-to-smtp-host#answer-36405556)
 
 [PHP 5.6 certificate verification failure](https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting#php-56-certificate-verification-failure)
+
+[OpenSSL changes in PHP 5.6.x](https://secure.php.net/manual/en/migration56.openssl.php)
+
+[TLS Peer Verification w/PHP 5.6 and WordPress SMTP Email plugin](http://www.roylindauer.com/2016/09/tls-peer-verification-php56-wordpress-smtp-email-plugin/)
