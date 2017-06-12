@@ -29,6 +29,10 @@
 * ga.html 要禁止缓存，这样在点击后退的时候就能实时统计了 (也可以在后面追加一个时间戳参数来刷新，例如 &_=new Date)
 * 有时候转发地址会使用 ipv6，可以在 resolver 中关掉
 
+**2017-06-12**
+
+使用 `valid_referers` 代替正则。
+
 ```
 map $http_user_agent $limit_bots {
     default 0;
@@ -44,7 +48,7 @@ map $http_user_agent $limit_bots {
 
 userid on;
 userid_name cid;
-userid_domain hughss.com;
+userid_domain imhugh.com;
 userid_path /;
 userid_expires max;
 
@@ -59,11 +63,12 @@ location @tracker {
 }
 
 location ~ /ga.html {
+    valid_referers server_names *.imhugh.com;
     set $post_flag "0";
     if ($limit_bots = 0) {
         set $post_flag "${post_flag}1";
     }
-    if ($http_referer ~* "https://hughss.com/") {
+    if ($invalid_referer != "1") {
         set $post_flag "${post_flag}2";
     }
     if ($post_flag = "012") {

@@ -157,14 +157,14 @@ server {
 
     server_tokens off;
 
-    server_name hughss.com www.hughss.com;
+    server_name imhugh.com www.imhugh.com;
 
     if ($request_method !~ ^(GET|POST)$) {
         return  444;
     }
 
-    if ($host != 'hughss.com') {
-        rewrite     ^/(.*)$ https://hughss.com/$1 permanent;
+    if ($host != 'imhugh.com') {
+        rewrite     ^/(.*)$ https://imhugh.com/$1 permanent;
     }
 
     location ~* (robots\.txt|favicon\.ico)$ {
@@ -196,7 +196,7 @@ server {
 
     server_tokens off;
 
-    server_name hughss.com www.hughss.com;
+    server_name imhugh.com www.imhugh.com;
 
     access_log      /dev/null;
 
@@ -207,7 +207,7 @@ server {
     }
 
     location / {
-        rewrite     ^/(.*)? https://hughss.com/$1 permanent;
+        rewrite     ^/(.*)? https://imhugh.com/$1 permanent;
     }
 }
 ```
