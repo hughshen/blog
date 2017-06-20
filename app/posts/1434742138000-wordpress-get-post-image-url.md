@@ -5,10 +5,10 @@
 
 ```php
 <?php
-$thumbnail_image_url = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'thumbnail');
+$thumbnail_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'thumbnail');
 echo $thumbnail_image_url[0];
 // OR
-$thumbnail_image_url = wp_get_attachment_image_url( get_post_thumbnail_id($post->ID), 'thumbnail');
+$thumbnail_image_url = wp_get_attachment_image_url(get_post_thumbnail_id($post->ID), 'thumbnail');
 echo $thumbnail_image_url;
 ?>
 ```
