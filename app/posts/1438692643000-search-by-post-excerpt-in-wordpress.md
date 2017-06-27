@@ -38,7 +38,7 @@ function jc_search_post_excerpt($where = ''){
 
 **2017-06-27**
 
-今天有个需求要过滤搜索文章的结果，由于使用了 [WooCommerce](https://wordpress.org/plugins/woocommerce/) 插件，要求搜索结果只包含产品，不包含其他任何文章。
+今天有个需求要过滤搜索文章的结果，由于使用了 [WooCommerce](https://wordpress.org/plugins/woocommerce/) 插件，要求搜索结果只包含产品，不包含其他任何文章，记录一下。
 
 ```php
 // pre_get_posts
@@ -57,7 +57,7 @@ add_filter('pre_get_posts', 'my_woocommerce_filter_search');
 function my_remove_custom_type_for_search()
 {
     global $wp_post_types;
-    if ( post_type_exists('custom-type')) {
+    if (post_type_exists('custom-type')) {
         $wp_post_types['custom-type']->exclude_from_search = true;
     }
 }
