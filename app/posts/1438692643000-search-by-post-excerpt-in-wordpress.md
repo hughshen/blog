@@ -8,27 +8,28 @@
 ```php
 /* add excerpt search */
 add_action('pre_get_posts', 'jc_woo_search_pre_get_posts');
-
-function jc_woo_search_pre_get_posts($query){
- 
-    if ( is_search() ) {
-        add_filter( 'posts_join', 'jc_search_post_join' ); // ingore this
-        add_filter( 'posts_where', 'jc_search_post_excerpt' );
+function jc_woo_search_pre_get_posts($query)
+{
+    if (is_search()) {
+        add_filter('posts_join', 'jc_search_post_join'); // ingore this
+        add_filter('posts_where', 'jc_search_post_excerpt');
     }
 }
 
-function jc_search_post_excerpt($where = ''){
- 
-    global $wp_the_query;
-    // get database prefix
+function jc_search_post_excerpt($where = '')
+{
     global $wpdb;
+    global $wp_the_query;
+
+    if (empty($wp_the_query->query_vars['wc_query']) && empty($wp_the_query->query_vars['s'])) {
+        return $where;
+    }
  
-    // escape if not woocommerce search query
-    if ( empty( $wp_the_query->query_vars['wc_query'] ) && empty( $wp_the_query->query_vars['s'] ) )
-            return $where;
- 
-    $where = preg_replace("/post_title LIKE ('%[^%]+%')/", "post_title LIKE $1) OR (".$wpdb->prefix."posts.post_excerpt LIKE $1 ", $where);
- 
+    $where = preg_replace(
+        "/post_title LIKE ('%[^%]+%')/",
+        "post_title LIKE $1) OR (" . $wpdb->prefix . "posts.post_excerpt LIKE $1 ",
+        $where
+    );
     return $where;
 }
 /* end search */
@@ -66,6 +67,53 @@ add_action('init', 'my_remove_custom_type_for_search', 99);
 
 中途漏了 `$query->is_main_query()` 这个判断，导致某些内容获取不到，例如头部的菜单显示空白。
 
+**2017-06-29**
+
+添加 Custom Fields 搜索。
+
+```php
+function add_meta_to_search_in_join_function($join)
+{
+    global $wpdb;
+    if (is_search()) {
+        $join .= ' LEFT JOIN ' . $wpdb->postmeta . ' ON ' . $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id ';
+    }
+    return $join;
+}
+add_filter('posts_join', 'add_meta_to_search_in_join_function');
+
+function add_meta_to_search_in_where_function($where)
+{
+    global $wpdb;
+    if (is_search()) {
+        $meta_keys = array('m_key_1', 'm_key_2');
+        $replace = array();
+        foreach ($meta_keys as $key) {
+            $replace[] = "(" . $wpdb->postmeta . ".meta_key = '" . $key . "' AND " . $wpdb->postmeta . ".meta_value LIKE $1)";
+        }
+        $replace = !empty($replace) ? implode(" OR ", $replace) : '';
+        $where = preg_replace(
+            "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+            // "(" . $wpdb->posts . ".post_title LIKE $1) OR (" . $wpdb->postmeta . ".meta_value LIKE $1)",
+            "(" . $wpdb->posts . ".post_title LIKE $1) OR (" . $replace . ")",
+            $where
+        );
+    }
+    return $where;
+}
+add_filter('posts_where', 'add_meta_to_search_in_where_function');
+
+function add_meta_to_search_in_distinct_function($where)
+{
+    global $wpdb;
+    if (is_search()) {
+        return "DISTINCT";
+    }
+    return $where;
+}
+add_filter('posts_distinct', 'add_meta_to_search_in_distinct_function');
+```
+
 ---
 
 ## 参考
@@ -81,3 +129,5 @@ add_action('init', 'my_remove_custom_type_for_search', 99);
 [WordPress Exclude Custom Post Type from Search](https://wp-mix.com/wordpress-exclude-custom-post-type-search/)
 
 [Exclude Custom Post Type From Search in WordPress](http://www.webtipblog.com/exclude-custom-post-type-search-wordpress/)
+
+[Search WordPress by Custom Fields without a Plugin](https://adambalee.com/search-wordpress-by-custom-fields-without-a-plugin/)
