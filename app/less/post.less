@@ -33,19 +33,20 @@ article {
         h1, h2 {
             border-bottom: 1px dashed @gray;
         }
-        code {
+        pre, code {
             color: @text-color;
             background: @block-bg-color;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+        code {
             font-size: .8rem;
             padding: .1rem .3rem;
         }
         pre {
             padding: 1rem;
-            background: @block-bg-color;
             overflow-x: auto;
             line-height: 1.2rem;
             code {
-                color: @text-color;
                 background: transparent;
                 padding: 0;
             }
