@@ -138,6 +138,18 @@ location ~ \.php$ {
 
 WNMP 基本已经搭建完成了，剩下的例如配置多个域名的以后再搞:)
 
+**2017-07-13**
+
+发现 Nginx 并没有记录 404 错误日志，在配置文件中开启 debug 日志记录。
+
+```bash
+server {
+    # ...
+    error_log /path/to/log debug;
+    # ...
+}
+```
+
 ---
 
 ## 参考
@@ -149,3 +161,5 @@ WNMP 基本已经搭建完成了，剩下的例如配置多个域名的以后再
 [windows下WNMP(windows+nginx+mysql+php)配置](http://blog.csdn.net/gsls200808/article/details/49661505)
 
 [wnmp(windows+nginx+mysql+php)环境搭建和配置](http://www.cnblogs.com/Li-Cheng/p/4399149.html)
+
+[A debugging log](https://nginx.org/en/docs/debugging_log.html)
