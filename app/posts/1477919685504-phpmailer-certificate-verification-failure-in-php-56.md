@@ -48,6 +48,41 @@ function my_wp_mail_smtp_custom_options($phpmailer)
 }
 ```
 
+**2017-07-21**
+
+今天又遇到发邮件失败的情况了 :(
+
+确定了是服务器的问题，PHP 版本 5.6，但是使用上面的方法并没有作用，下面是一些 debug 信息：
+
+```
+...
+220-We do not authorize the use of this system to transport unsolicited,
+220 and/or bulk e-mail.
+...
+SMTP Error: Could not authenticate
+...
+```
+
+看起来不能验证账号，而 SMTP 服务器是能够连接的，也显示了密码验证的过程，但就是验证失败，觉得很奇怪，Google 找到说是 cPanel/WHM 的原因，试了下，竟然成功了，原因是 cPanel 开启了 `Restrict outgoing SMTP to root, exim, and mailman (FKA SMTP Tweak)`，关闭了就好。
+
+登录到 cPanel 后台，定位到 Home » Server Configuration » Tweak Settings，修改以下几个配置项的值。
+
+> Restrict outgoing SMTP to root, exim, and mailman (FKA SMTP Tweak) - **Off**
+
+> Prevent “nobody” from sending mail - **On**
+
+> Allow users to relay mail if they use an IP address through which someone has validated an IMAP or POP3 login within the last hour (Pop-before-SMTP)  - **On**
+
+> Add X-PopBeforeSMTP header for mail sent via POP-before-SMTP - **On**
+
+我只修改了第一个就好了，其他的没动。
+
+查找了下，这个配置是由于垃圾邮件发送一般会通过远程连接邮件服务器，而 cPanel 默认会开启 `SMTP Restrictions` 来防止用户这样做，更多信息可以看 [这里](https://documentation.cpanel.net/display/ALD/SMTP+Restrictions)。
+
+额外说下，如果出现 5.6 版本 SSL 验证失败的问题，可以试下 TLS 验证，今天使用 TLS 并没出现什么问题。
+
+还有做个记录吧，如果 Gmail SMTP 不能使用的话，可以试下修改账号的两个设置：`google less secure apps` 和 `google unlock captcha`，Google 搜索这两个关键词，一般来说，设置了之后 SMTP 就能使用了。
+
 ---
 
 ## 参考
@@ -59,3 +94,5 @@ function my_wp_mail_smtp_custom_options($phpmailer)
 [OpenSSL changes in PHP 5.6.x](https://secure.php.net/manual/en/migration56.openssl.php)
 
 [TLS Peer Verification w/PHP 5.6 and WordPress SMTP Email plugin](http://www.roylindauer.com/2016/09/tls-peer-verification-php56-wordpress-smtp-email-plugin/)
+
+[cPanel Restrict outgoing SMTP Error](http://amdtllc.com/blog/article/2)
