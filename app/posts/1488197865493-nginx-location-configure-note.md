@@ -89,6 +89,17 @@ location / {
 }
 ```
 
+**2017-08-05**
+
+子目录下配置 Rewrite 规则隐藏 index.php，作个记录。
+
+```
+location /wordpress/ {
+    index index.php index.html;
+    try_files $uri $uri/ /wordpress/index.php$is_args$args;
+}
+```
+
 ---
 
 ## 参考
@@ -96,3 +107,5 @@ location / {
 [nginx location匹配规则](http://www.nginx.cn/115.html)
 
 [nginx root&alias文件路径配置](http://www.ttlsa.com/nginx/nginx-root_alias-file-path-configuration/)
+
+[Nginx rewrite in subfolder](https://stackoverflow.com/questions/17805576/nginx-rewrite-in-subfolder)
