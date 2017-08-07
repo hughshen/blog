@@ -64,8 +64,22 @@ sudo service nginx restart
 
 Nginx 用户认证只是提供了简单的验证功能，最好还是跟 SSL 加密一起使用。
 
+**2017-08-07**
+
+Apache 下可以通过修改 .htaccess 来添加认证，密码文件格式与 Nginx 一样。
+
+```
+AuthType Basic
+AuthName "Password Required"
+#AuthBasicProvider file
+AuthUserFile "/path/to/.htpasswd"
+Require valid-user
+```
+
 ---
 
 ## 参考
 
 [How To Set Up Password Authentication with Nginx on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04)
+
+[Authentication and Authorization](https://httpd.apache.org/docs/current/howto/auth.html)
