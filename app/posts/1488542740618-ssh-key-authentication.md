@@ -41,3 +41,21 @@ PasswordAuthentication no
 ```
 
 我是用 PuTTY 来登录 VPS 的，需要使用 [PuTTYGen](http://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) 另外再生成 ppk 私钥文件，[下载软件](https://the.earth.li/~sgtatham/putty/latest/w64/puttygen.exe)。
+
+**2017-08-15**
+
+从 VPS A 使用密钥登录到 VPS B。
+
+在机器 A 上生成密钥对：
+
+```bash
+ssh-keygen -t rsa
+```
+
+把 A 生成的公钥上传都到 B 中，即 `/path/user/.ssh/authorized_keys`：
+
+```bash
+ssh-copy-id user@123.45.67.89 # B's IP
+```
+
+上传好之后在 A 上直接使用 `ssh user@IP` 登录就行，接下来就是禁止 SSH 密码登录的配置了。
