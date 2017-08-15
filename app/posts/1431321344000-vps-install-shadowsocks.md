@@ -11,6 +11,17 @@ pip install shadowcocks
 apt-get install python-m2crypto #支持更多的加密方式
 ```
 
+**2017-08-15**
+
+在 Ubuntu1604 下可能要加上：
+
+```bash
+pip install --upgrade pip
+pip install setuptools
+# 开始安装
+pip install shadowcocks
+```
+
 配置 /etc/shadowsocks/config.json 手动创建该文件
 
 ```bash
